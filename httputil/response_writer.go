@@ -122,31 +122,36 @@ func (wrapper *ResponseWrapper) getContentType() string {
 
 // SupportsProcessing determine if HttpWrapper is supported by this plugin based on encoding.
 func (wrapper *ResponseWrapper) SupportsProcessing() bool {
-	foundContentType := false
+	if wrapper.monitoring.CheckMIMEContentType {
+		foundContentType := false
 
-	// If content type does not match return values with false
-	contentType := wrapper.getContentType()
-	for _, monitoredType := range wrapper.monitoring.Types {
-		if strings.Contains(contentType, monitoredType) {
-			foundContentType = true
+		// If content type does not match return values with false
+		contentType := wrapper.getContentType()
+		for _, monitoredType := range wrapper.monitoring.Types {
+			if strings.Contains(contentType, monitoredType) {
+				foundContentType = true
 
-			break
+				break
+			}
+		}
+
+		if !foundContentType {
+			return false
 		}
 	}
 
-	if !foundContentType {
-		return false
-	}
+	if wrapper.monitoring.CheckContentEncoding {
+		encoding := wrapper.getContentEncoding()
 
-	encoding := wrapper.getContentEncoding()
-
-	// If content type is supported validate encoding as well
-	switch encoding {
-	case compressutil.Gzip, compressutil.Deflate, compressutil.Identity, "":
-		return true
-	default:
-		return false
+		// If content type is supported validate encoding as well
+		switch encoding {
+		case compressutil.Gzip, compressutil.Deflate, compressutil.Identity, "":
+			return true
+		default:
+			return false
+		}
 	}
+	return true
 }
 
 // SetLastModified update the local lastModified variable from non-package-based users.
