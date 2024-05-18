@@ -161,7 +161,7 @@ func TestServeHTTP(t *testing.T) {
 				LogLevel:     -1,
 			}
 
-			next := func(responseWriter http.ResponseWriter, req *http.Request) {
+			next := func(responseWriter http.ResponseWriter, _ *http.Request) {
 				responseWriter.Header().Set("Content-Encoding", test.contentEncoding)
 				responseWriter.Header().Set("Content-Type", test.contentType)
 				responseWriter.Header().Set("Last-Modified", "Thu, 02 Jun 2016 06:01:08 GMT")

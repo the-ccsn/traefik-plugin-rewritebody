@@ -69,10 +69,12 @@ func TestGetEncodingTarget(t *testing.T) {
 			if err != nil {
 				t.Errorf("Error creating request: %v", err)
 			}
+
 			request.Header.Set("Accept-Encoding", test.acceptEncoding)
 
 			wrappedRequest := WrapRequest(request, defaultMonitoring, *defaultLogWriter)
 			target := wrappedRequest.GetEncodingTarget()
+
 			if target != test.expectedTarget {
 				t.Errorf("Expected: '%s' | Got: '%s'", test.expectedTarget, target)
 			}
@@ -135,6 +137,7 @@ func TestRemoveUnuspportedEncoding(t *testing.T) {
 			if err != nil {
 				t.Errorf("Error creating request: %v", err)
 			}
+
 			request.Header.Set("Accept-Encoding", test.acceptEncoding)
 
 			wrappedRequest := WrapRequest(request, defaultMonitoring, *defaultLogWriter)
@@ -229,6 +232,7 @@ func TestSupportsProcessing(t *testing.T) {
 			if err != nil {
 				t.Errorf("Error creating request: %v", err)
 			}
+
 			request.Header.Set("Accept", test.inputType)
 
 			wrappedRequest := WrapRequest(request, test.monitoringConfig, *defaultLogWriter)

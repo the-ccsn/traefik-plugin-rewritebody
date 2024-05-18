@@ -122,7 +122,7 @@ func (wrapper *ResponseWrapper) getContentType() string {
 
 // SupportsProcessing determine if HttpWrapper is supported by this plugin based on encoding.
 func (wrapper *ResponseWrapper) SupportsProcessing() bool {
-	if wrapper.monitoring.CheckMIMEContentType {
+	if wrapper.monitoring.CheckMimeContentType {
 		foundContentType := false
 
 		// If content type does not match return values with false
@@ -151,6 +151,7 @@ func (wrapper *ResponseWrapper) SupportsProcessing() bool {
 			return false
 		}
 	}
+
 	return true
 }
 

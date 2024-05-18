@@ -8,12 +8,12 @@ import (
 // MonitoringConfig structure of data for handling configuration for
 // controlling what content is monitored.
 type MonitoringConfig struct {
-	Types                []string `json:"types,omitempty" yaml:"types,omitempty" toml:"types,omitempty" export:"true"`
-	Methods              []string `json:"methods,omitempty" yaml:"methods,omitempty" toml:"methods,omitempty" export:"true"`
-	CheckMIMEAccept      bool     `json:"checkMIMEAccept" toml:"checkMIMEAccept" yaml:"checkMIMEAccept" default:"false" export:"true"`
-	CheckMIMEContentType bool     `json:"checkMIMEContentType" toml:"checkMIMEContentType" yaml:"checkMIMEContentType" default:"true" export:"true"`
-	CheckAcceptEncoding  bool     `json:"checkAcceptEncoding" toml:"checkAcceptEncoding" yaml:"checkAcceptEncoding" default:"true" export:"true"`
-	CheckContentEncoding bool     `json:"checkContentEncoding" toml:"checkContentEncoding" yaml:"checkContentEncoding" default:"true" export:"true"`
+	Types                []string `export:"true"   json:"types,omitempty"   toml:"types,omitempty"      yaml:"types,omitempty"`
+	Methods              []string `export:"true"   json:"methods,omitempty" toml:"methods,omitempty"    yaml:"methods,omitempty"`
+	CheckMimeAccept      bool     `default:"false" export:"true"            json:"checkMimeAccept"      toml:"checkMimeAccept"      yaml:"checkMimeAccept"`
+	CheckMimeContentType bool     `default:"true"  export:"true"            json:"checkMimeContentType" toml:"checkMimeContentType" yaml:"checkMimeContentType"`
+	CheckAcceptEncoding  bool     `default:"true"  export:"true"            json:"checkAcceptEncoding"  toml:"checkAcceptEncoding"  yaml:"checkAcceptEncoding"`
+	CheckContentEncoding bool     `default:"true"  export:"true"            json:"checkContentEncoding" toml:"checkContentEncoding" yaml:"checkContentEncoding"`
 }
 
 // EnsureDefaults check Types and Methods for empty arrays and apply default values if found.

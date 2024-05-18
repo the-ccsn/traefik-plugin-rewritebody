@@ -130,7 +130,8 @@ func removeUnsupportedAcceptEncoding(header http.Header) string {
 // SupportsProcessing determine if http.Request is supported by this plugin.
 func (req *RequestWrapper) SupportsProcessing() bool {
 	isSupported := false
-	if req.monitoring.CheckMIMEAccept {
+
+	if req.monitoring.CheckMimeAccept {
 		acceptHeader := req.Header.Get("Accept")
 
 		for _, monitoredType := range req.monitoring.Types {
@@ -138,11 +139,12 @@ func (req *RequestWrapper) SupportsProcessing() bool {
 				isSupported = true
 			}
 		}
+
 		if !isSupported {
 			return false
-		} else {
-			isSupported = false
 		}
+
+		isSupported = false
 	}
 
 	// Ignore non GET requests

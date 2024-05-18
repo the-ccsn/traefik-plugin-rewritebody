@@ -77,6 +77,7 @@ func TestEncode(t *testing.T) {
 			} else {
 				isBad = bytes.Equal(test.input, output)
 			}
+
 			if isBad {
 				t.Errorf("match error got body: %v\n wanted: %v", output, test.input)
 			}
@@ -146,6 +147,7 @@ func TestDecode(t *testing.T) {
 			} else {
 				isBad = bytes.Equal(test.input, output)
 			}
+
 			if isBad {
 				t.Errorf("match error got body: %s\n wanted: %s", output, test.input)
 			}
