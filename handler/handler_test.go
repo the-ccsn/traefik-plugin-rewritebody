@@ -136,7 +136,7 @@ func TestServeHTTP(t *testing.T) {
 			expLastModified: true,
 		},
 		{
-			desc: "should ignore unsupported encoding",
+			desc: "should support brotli encoding",
 			rewrites: []Rewrite{
 				{
 					Regex:       "foo",
@@ -144,6 +144,21 @@ func TestServeHTTP(t *testing.T) {
 				},
 			},
 			contentEncoding: "br",
+			contentType:     "text/html",
+			lastModified:    true,
+			resBody:         compressString("foo is the new bar", "br"),
+			expResBody:      compressString("foo is the new bar", "br"),
+			expLastModified: true,
+		},
+		{
+			desc: "should ignore unsupported encoding",
+			rewrites: []Rewrite{
+				{
+					Regex:       "foo",
+					Replacement: "bar",
+				},
+			},
+			contentEncoding: "unknown",
 			contentType:     "text/html",
 			lastModified:    true,
 			resBody:         "foo is the new bar",

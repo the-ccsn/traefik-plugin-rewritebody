@@ -145,7 +145,7 @@ func (wrapper *ResponseWrapper) SupportsProcessing() bool {
 
 		// If content type is supported validate encoding as well
 		switch encoding {
-		case compressutil.Gzip, compressutil.Deflate, compressutil.Identity, "":
+		case compressutil.Gzip, compressutil.Deflate, compressutil.Brotli, compressutil.Identity, "":
 			return true
 		default:
 			return false

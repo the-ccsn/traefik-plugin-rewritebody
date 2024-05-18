@@ -54,7 +54,7 @@ func (req *RequestWrapper) GetEncodingTarget() string {
 
 	for _, a := range acceptEncoding {
 		switch a.Value {
-		case compressutil.Gzip, compressutil.Deflate:
+		case compressutil.Gzip, compressutil.Deflate, compressutil.Brotli:
 			filteredEncodings = append(filteredEncodings, a)
 		}
 	}
@@ -78,7 +78,11 @@ type encodingSpec struct {
 func parseAcceptEncoding(header http.Header) []encodingSpec {
 	encodingHeader := header.Get("Accept-Encoding")
 	if encodingHeader == "*" {
-		return []encodingSpec{{Quality: 1.0, Value: compressutil.Gzip}, {Quality: 1.0, Value: compressutil.Deflate}}
+		return []encodingSpec{
+			{Quality: 1.0, Value: compressutil.Gzip},
+			{Quality: 1.0, Value: compressutil.Deflate},
+			{Quality: 1.0, Value: compressutil.Brotli},
+		}
 	}
 
 	encodingList := strings.Split(encodingHeader, ",")
@@ -119,7 +123,7 @@ func removeUnsupportedAcceptEncoding(header http.Header) string {
 	for _, encoding := range encodingList {
 		split := strings.Split(strings.TrimSpace(encoding), ";q=")
 		switch split[0] {
-		case compressutil.Gzip, compressutil.Deflate, compressutil.Identity:
+		case compressutil.Gzip, compressutil.Deflate, compressutil.Brotli, compressutil.Identity:
 			result = append(result, encoding)
 		}
 	}

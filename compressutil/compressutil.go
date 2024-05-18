@@ -7,6 +7,8 @@ import (
 	"compress/gzip"
 	"io"
 	"log"
+
+	"github.com/andybalholm/brotli"
 )
 
 // ReaderError for notating that an error occurred while reading compressed data.
@@ -37,6 +39,9 @@ func getRawReader(byteReader *bytes.Buffer, encoding string) (io.Reader, error) 
 	case Deflate:
 		return flate.NewReader(byteReader), nil
 
+	case Brotli:
+		return brotli.NewReader(byteReader), nil
+
 	default:
 		return byteReader, nil
 	}
@@ -50,6 +55,9 @@ func Encode(data []byte, encoding string) ([]byte, error) {
 
 	case Deflate:
 		return compressWithZlib(data)
+
+	case Brotli:
+		return compressWithBrotli(data)
 
 	default:
 		return data, nil
@@ -86,6 +94,25 @@ func compressWithZlib(bodyBytes []byte) ([]byte, error) {
 	}
 
 	if err := zlibWriter.Close(); err != nil {
+		log.Printf("unable to close zlib writer: %v", err)
+
+		return nil, err
+	}
+
+	return buf.Bytes(), nil
+}
+
+func compressWithBrotli(bodyBytes []byte) ([]byte, error) {
+	var buf bytes.Buffer
+	brWriter := brotli.NewWriterLevel(&buf, brotli.DefaultCompression)
+
+	if _, err := brWriter.Write(bodyBytes); err != nil {
+		log.Printf("unable to recompress rewrited body: %v", err)
+
+		return nil, err
+	}
+
+	if err := brWriter.Close(); err != nil {
 		log.Printf("unable to close zlib writer: %v", err)
 
 		return nil, err

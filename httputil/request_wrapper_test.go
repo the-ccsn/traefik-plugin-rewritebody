@@ -26,13 +26,18 @@ func TestGetEncodingTarget(t *testing.T) {
 			expectedTarget: "deflate",
 		},
 		{
+			desc:           "Supports brotli",
+			acceptEncoding: "br",
+			expectedTarget: "br",
+		},
+		{
 			desc:           "Supports identity",
 			acceptEncoding: "identity",
 			expectedTarget: "identity",
 		},
 		{
-			desc:           "Ignores brotli",
-			acceptEncoding: "br, gzip",
+			desc:           "Ignores unknown",
+			acceptEncoding: "unknown, gzip",
 			expectedTarget: "gzip",
 		},
 		{
@@ -99,13 +104,18 @@ func TestRemoveUnuspportedEncoding(t *testing.T) {
 			expectedTarget: "deflate",
 		},
 		{
+			desc:           "Supports brotli",
+			acceptEncoding: "br",
+			expectedTarget: "br",
+		},
+		{
 			desc:           "Supports identity",
 			acceptEncoding: "identity",
 			expectedTarget: "identity",
 		},
 		{
-			desc:           "Ignores brotli",
-			acceptEncoding: "br, gzip",
+			desc:           "Ignores unknown",
+			acceptEncoding: "unknown, gzip",
 			expectedTarget: " gzip",
 		},
 		{
