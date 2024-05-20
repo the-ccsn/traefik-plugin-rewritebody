@@ -160,7 +160,7 @@ func TestServeHTTP(t *testing.T) {
 			},
 			lastModified:    true,
 			resBody:         compressString("foo is the new bar", "br"),
-			expResBody:      compressString("foo is the new bar", "br"),
+			expResBody:      compressString("bar is the new bar", "br"),
 			expLastModified: true,
 		},
 		{

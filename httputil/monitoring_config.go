@@ -21,7 +21,7 @@ func CreateMonitoringConfig() *MonitoringConfig {
 	config := MonitoringConfig{
 		Types:                nil,
 		Methods:              nil,
-		CheckMimeAccept:      false,
+		CheckMimeAccept:      true,
 		CheckMimeContentType: true,
 		CheckAcceptEncoding:  true,
 		CheckContentEncoding: true,

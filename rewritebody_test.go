@@ -150,8 +150,23 @@ func TestServeHTTP(t *testing.T) {
 			expLastModified: true,
 		},
 		{
-			desc:            "should ignore unsupported encoding",
+			desc:            "should support brotli encoding",
 			contentEncoding: "br",
+			contentType:     "text/html",
+			rewrites: []handler.Rewrite{
+				{
+					Regex:       "foo",
+					Replacement: "bar",
+				},
+			},
+			lastModified:    true,
+			resBody:         compressString("foo is the new bar", "br"),
+			expResBody:      compressString("bar is the new bar", "br"),
+			expLastModified: true,
+		},
+		{
+			desc:            "should ignore unsupported encoding",
+			contentEncoding: "unknown",
 			contentType:     "text/html",
 			rewrites: []handler.Rewrite{
 				{
