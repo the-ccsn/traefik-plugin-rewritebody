@@ -25,19 +25,24 @@ func TestServeHTTP(t *testing.T) {
 		expLastModified bool
 	}{
 		{
-			desc: "should replace foo by bar",
+			desc:            "should replace foo by bar",
+			contentEncoding: "",
+			contentType:     "text/html",
 			rewrites: []Rewrite{
 				{
 					Regex:       "foo",
 					Replacement: "bar",
 				},
 			},
-			contentType: "text/html",
-			resBody:     "foo is the new bar",
-			expResBody:  "bar is the new bar",
+			lastModified:    false,
+			resBody:         "foo is the new bar",
+			expResBody:      "bar is the new bar",
+			expLastModified: false,
 		},
 		{
-			desc: "should replace foo by bar, then by foo",
+			desc:            "should replace foo by bar, then by foo",
+			contentEncoding: "",
+			contentType:     "text/html",
 			rewrites: []Rewrite{
 				{
 					Regex:       "foo",
@@ -48,118 +53,126 @@ func TestServeHTTP(t *testing.T) {
 					Replacement: "foo",
 				},
 			},
-			contentType: "text/html",
-			resBody:     "foo is the new bar",
-			expResBody:  "foo is the new foo",
+			lastModified:    false,
+			resBody:         "foo is the new bar",
+			expResBody:      "foo is the new foo",
+			expLastModified: false,
 		},
 		{
-			desc: "should not replace anything if content encoding is not identity or empty",
-			rewrites: []Rewrite{
-				{
-					Regex:       "foo",
-					Replacement: "bar",
-				},
-			},
+			desc:            "should not replace anything if content encoding is not identity or empty",
 			contentEncoding: "other",
 			contentType:     "text/html",
+			rewrites: []Rewrite{
+				{
+					Regex:       "foo",
+					Replacement: "bar",
+				},
+			},
+			lastModified:    false,
 			resBody:         "foo is the new bar",
 			expResBody:      "foo is the new bar",
+			expLastModified: false,
 		},
 		{
-			desc: "should not replace anything if content type does not contain text or is not empty",
+			desc:            "should not replace anything if content type does not contain text or is not empty",
+			contentEncoding: "",
+			contentType:     "image",
 			rewrites: []Rewrite{
 				{
 					Regex:       "foo",
 					Replacement: "bar",
 				},
 			},
-			contentType: "image",
-			resBody:     "foo is the new bar",
-			expResBody:  "foo is the new bar",
+			lastModified:    false,
+			resBody:         "foo is the new bar",
+			expResBody:      "foo is the new bar",
+			expLastModified: false,
 		},
 		{
-			desc: "should replace foo by bar if content encoding is identity",
-			rewrites: []Rewrite{
-				{
-					Regex:       "foo",
-					Replacement: "bar",
-				},
-			},
+			desc:            "should replace foo by bar if content encoding is identity",
 			contentEncoding: "identity",
 			contentType:     "text/html",
+			rewrites: []Rewrite{
+				{
+					Regex:       "foo",
+					Replacement: "bar",
+				},
+			},
+			lastModified:    false,
 			resBody:         "foo is the new bar",
 			expResBody:      "bar is the new bar",
+			expLastModified: false,
 		},
 		{
-			desc: "should not remove the last modified header",
+			desc:            "should not remove the last modified header",
+			contentEncoding: "identity",
+			contentType:     "text/html",
 			rewrites: []Rewrite{
 				{
 					Regex:       "foo",
 					Replacement: "bar",
 				},
 			},
-			contentEncoding: "identity",
-			contentType:     "text/html",
 			lastModified:    true,
 			resBody:         "foo is the new bar",
 			expResBody:      "bar is the new bar",
 			expLastModified: true,
 		},
 		{
-			desc: "should support gzip encoding",
+			desc:            "should support gzip encoding",
+			contentEncoding: "gzip",
+			contentType:     "text/html",
 			rewrites: []Rewrite{
 				{
 					Regex:       "foo",
 					Replacement: "bar",
 				},
 			},
-			contentEncoding: "gzip",
-			contentType:     "text/html",
 			lastModified:    true,
 			resBody:         compressString("foo is the new bar", "gzip"),
 			expResBody:      compressString("bar is the new bar", "gzip"),
 			expLastModified: true,
 		},
 		{
-			desc: "should support deflate encoding",
+			desc:            "should support deflate encoding",
+			contentEncoding: "deflate",
+			contentType:     "text/html",
 			rewrites: []Rewrite{
 				{
 					Regex:       "foo",
 					Replacement: "bar",
 				},
 			},
-			contentEncoding: "deflate",
-			contentType:     "text/html",
 			lastModified:    true,
 			resBody:         compressString("foo is the new bar", "deflate"),
 			expResBody:      compressString("bar is the new bar", "deflate"),
 			expLastModified: true,
 		},
 		{
-			desc: "should support brotli encoding",
+			desc:            "should support brotli encoding",
+			contentEncoding: "br",
+			contentType:     "text/html",
 			rewrites: []Rewrite{
 				{
 					Regex:       "foo",
 					Replacement: "bar",
 				},
 			},
-			contentEncoding: "br",
-			contentType:     "text/html",
 			lastModified:    true,
 			resBody:         compressString("foo is the new bar", "br"),
 			expResBody:      compressString("foo is the new bar", "br"),
 			expLastModified: true,
 		},
 		{
-			desc: "should ignore unsupported encoding",
+			desc:            "should ignore unsupported encoding",
+			contentEncoding: "unknown",
+			contentType:     "text/html",
 			rewrites: []Rewrite{
 				{
 					Regex:       "foo",
 					Replacement: "bar",
 				},
 			},
-			contentEncoding: "unknown",
-			contentType:     "text/html",
 			lastModified:    true,
 			resBody:         "foo is the new bar",
 			expResBody:      "foo is the new bar",
@@ -173,6 +186,7 @@ func TestServeHTTP(t *testing.T) {
 				LastModified: test.lastModified,
 				Rewrites:     test.rewrites,
 				LogLevel:     -1,
+				Monitoring:   *httputil.CreateMonitoringConfig(),
 			}
 
 			next := func(responseWriter http.ResponseWriter, _ *http.Request) {
@@ -249,16 +263,15 @@ func TestNew(t *testing.T) {
 		},
 	}
 
-	defaultMonitoring := httputil.MonitoringConfig{
-		Types:   []string{"text/html"},
-		Methods: []string{http.MethodGet},
-	}
+	defaultMonitoring := *httputil.CreateMonitoringConfig()
 
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
 			config := &Config{
-				Rewrites:   test.rewrites,
-				Monitoring: defaultMonitoring,
+				LastModified: false,
+				Rewrites:     test.rewrites,
+				LogLevel:     0,
+				Monitoring:   defaultMonitoring,
 			}
 
 			_, err := New(context.Background(), nil, config, "rewriteBody")

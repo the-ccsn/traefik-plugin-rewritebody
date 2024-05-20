@@ -53,6 +53,7 @@ linters:
     - testpackage
     - paralleltest
     - tparallel
+    - depguard
 issues:
   exclude-use-default: false
   max-per-linter: 0

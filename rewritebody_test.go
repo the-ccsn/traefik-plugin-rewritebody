@@ -18,7 +18,7 @@ func TestServeHTTP(t *testing.T) {
 	tests := []struct {
 		desc            string
 		contentEncoding string
-		contentType     string `default:"text/html"`
+		contentType     string
 		rewrites        []handler.Rewrite
 		lastModified    bool
 		resBody         string
@@ -26,19 +26,24 @@ func TestServeHTTP(t *testing.T) {
 		expLastModified bool
 	}{
 		{
-			desc: "should replace foo by bar",
+			desc:            "should replace foo by bar",
+			contentEncoding: "",
+			contentType:     "text/html",
 			rewrites: []handler.Rewrite{
 				{
 					Regex:       "foo",
 					Replacement: "bar",
 				},
 			},
-			contentType: "text/html",
-			resBody:     "foo is the new bar",
-			expResBody:  "bar is the new bar",
+			lastModified:    false,
+			resBody:         "foo is the new bar",
+			expResBody:      "bar is the new bar",
+			expLastModified: false,
 		},
 		{
-			desc: "should replace foo by bar, then by foo",
+			desc:            "should replace foo by bar, then by foo",
+			contentEncoding: "",
+			contentType:     "text/html",
 			rewrites: []handler.Rewrite{
 				{
 					Regex:       "foo",
@@ -49,103 +54,111 @@ func TestServeHTTP(t *testing.T) {
 					Replacement: "foo",
 				},
 			},
-			contentType: "text/html",
-			resBody:     "foo is the new bar",
-			expResBody:  "foo is the new foo",
+			lastModified:    false,
+			resBody:         "foo is the new bar",
+			expResBody:      "foo is the new foo",
+			expLastModified: false,
 		},
 		{
-			desc: "should not replace anything if content encoding is not identity or empty",
-			rewrites: []handler.Rewrite{
-				{
-					Regex:       "foo",
-					Replacement: "bar",
-				},
-			},
+			desc:            "should not replace anything if content encoding is not identity or empty",
 			contentEncoding: "other",
 			contentType:     "text/html",
+			rewrites: []handler.Rewrite{
+				{
+					Regex:       "foo",
+					Replacement: "bar",
+				},
+			},
+			lastModified:    false,
 			resBody:         "foo is the new bar",
 			expResBody:      "foo is the new bar",
+			expLastModified: false,
 		},
 		{
-			desc: "should not replace anything if content type does not contain text or is not empty",
+			desc:            "should not replace anything if content type does not contain text or is not empty",
+			contentEncoding: "",
+			contentType:     "image",
 			rewrites: []handler.Rewrite{
 				{
 					Regex:       "foo",
 					Replacement: "bar",
 				},
 			},
-			contentType: "image",
-			resBody:     "foo is the new bar",
-			expResBody:  "foo is the new bar",
+			lastModified:    false,
+			resBody:         "foo is the new bar",
+			expResBody:      "foo is the new bar",
+			expLastModified: false,
 		},
 		{
-			desc: "should replace foo by bar if content encoding is identity",
-			rewrites: []handler.Rewrite{
-				{
-					Regex:       "foo",
-					Replacement: "bar",
-				},
-			},
+			desc:            "should replace foo by bar if content encoding is identity",
 			contentEncoding: "identity",
 			contentType:     "text/html",
+			rewrites: []handler.Rewrite{
+				{
+					Regex:       "foo",
+					Replacement: "bar",
+				},
+			},
+			lastModified:    false,
 			resBody:         "foo is the new bar",
 			expResBody:      "bar is the new bar",
+			expLastModified: false,
 		},
 		{
-			desc: "should not remove the last modified header",
+			desc:            "should not remove the last modified header",
+			contentEncoding: "identity",
+			contentType:     "text/html",
 			rewrites: []handler.Rewrite{
 				{
 					Regex:       "foo",
 					Replacement: "bar",
 				},
 			},
-			contentEncoding: "identity",
-			contentType:     "text/html",
 			lastModified:    true,
 			resBody:         "foo is the new bar",
 			expResBody:      "bar is the new bar",
 			expLastModified: true,
 		},
 		{
-			desc: "should support gzip encoding",
+			desc:            "should support gzip encoding",
+			contentEncoding: "gzip",
+			contentType:     "text/html",
 			rewrites: []handler.Rewrite{
 				{
 					Regex:       "foo",
 					Replacement: "bar",
 				},
 			},
-			contentEncoding: "gzip",
-			contentType:     "text/html",
 			lastModified:    true,
 			resBody:         compressString("foo is the new bar", "gzip"),
 			expResBody:      compressString("bar is the new bar", "gzip"),
 			expLastModified: true,
 		},
 		{
-			desc: "should support deflate encoding",
+			desc:            "should support deflate encoding",
+			contentEncoding: "deflate",
+			contentType:     "text/html",
 			rewrites: []handler.Rewrite{
 				{
 					Regex:       "foo",
 					Replacement: "bar",
 				},
 			},
-			contentEncoding: "deflate",
-			contentType:     "text/html",
 			lastModified:    true,
 			resBody:         compressString("foo is the new bar", "deflate"),
 			expResBody:      compressString("bar is the new bar", "deflate"),
 			expLastModified: true,
 		},
 		{
-			desc: "should ignore unsupported encoding",
+			desc:            "should ignore unsupported encoding",
+			contentEncoding: "br",
+			contentType:     "text/html",
 			rewrites: []handler.Rewrite{
 				{
 					Regex:       "foo",
 					Replacement: "bar",
 				},
 			},
-			contentEncoding: "br",
-			contentType:     "text/html",
 			lastModified:    true,
 			resBody:         "foo is the new bar",
 			expResBody:      "foo is the new bar",
@@ -155,11 +168,10 @@ func TestServeHTTP(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			config := &handler.Config{
-				LastModified: test.lastModified,
-				Rewrites:     test.rewrites,
-				LogLevel:     -1,
-			}
+			config := CreateConfig()
+			config.LastModified = test.lastModified
+			config.Rewrites = test.rewrites
+			config.LogLevel = -1
 
 			next := func(responseWriter http.ResponseWriter, _ *http.Request) {
 				responseWriter.Header().Set("Content-Encoding", test.contentEncoding)
@@ -235,17 +247,13 @@ func TestNew(t *testing.T) {
 		},
 	}
 
-	defaultMonitoring := httputil.MonitoringConfig{
-		Types:   []string{"text/html"},
-		Methods: []string{http.MethodGet},
-	}
+	defaultMonitoring := *httputil.CreateMonitoringConfig()
 
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			config := &handler.Config{
-				Rewrites:   test.rewrites,
-				Monitoring: defaultMonitoring,
-			}
+			config := CreateConfig()
+			config.Rewrites = test.rewrites
+			config.Monitoring = defaultMonitoring
 
 			_, err := New(context.Background(), nil, config, "rewriteBody")
 			if test.expErr && err == nil {

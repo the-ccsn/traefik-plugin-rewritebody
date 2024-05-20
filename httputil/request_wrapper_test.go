@@ -57,10 +57,7 @@ func TestGetEncodingTarget(t *testing.T) {
 		},
 	}
 
-	defaultMonitoring := MonitoringConfig{
-		Types:   []string{"text/html"},
-		Methods: []string{"GET"},
-	}
+	defaultMonitoring := *CreateMonitoringConfig()
 
 	defaultLogWriter := logger.CreateLogger(logger.Error)
 
@@ -130,10 +127,7 @@ func TestRemoveUnuspportedEncoding(t *testing.T) {
 		},
 	}
 
-	defaultMonitoring := MonitoringConfig{
-		Types:   []string{"text/html"},
-		Methods: []string{"GET"},
-	}
+	defaultMonitoring := *CreateMonitoringConfig()
 
 	defaultLogWriter := logger.CreateLogger(logger.Error)
 
@@ -161,6 +155,8 @@ func TestRemoveUnuspportedEncoding(t *testing.T) {
 }
 
 func TestSupportsProcessing(t *testing.T) {
+	defaultMonitoring := *CreateMonitoringConfig()
+
 	tests := []struct {
 		desc             string
 		inputType        string
@@ -169,64 +165,56 @@ func TestSupportsProcessing(t *testing.T) {
 		expectedSupport  bool
 	}{
 		{
-			desc:            "Supports default config",
-			inputType:       "text/html",
-			inputMethod:     http.MethodGet,
-			expectedSupport: true,
-			monitoringConfig: MonitoringConfig{
-				Types:   []string{"text/html"},
-				Methods: []string{"GET"},
-			},
+			desc:             "Supports default config",
+			inputType:        "text/html",
+			inputMethod:      http.MethodGet,
+			expectedSupport:  true,
+			monitoringConfig: defaultMonitoring,
 		},
 		{
-			desc:            "Supports default browser load",
-			inputType:       "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-			inputMethod:     http.MethodGet,
-			expectedSupport: true,
-			monitoringConfig: MonitoringConfig{
-				Types:   []string{"text/html"},
-				Methods: []string{"GET"},
-			},
+			desc:             "Supports default browser load",
+			inputType:        "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+			inputMethod:      http.MethodGet,
+			expectedSupport:  true,
+			monitoringConfig: defaultMonitoring,
 		},
 		{
 			desc:            "Supports when types includes unsupported type first",
 			inputType:       "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
 			inputMethod:     http.MethodGet,
 			expectedSupport: true,
-			monitoringConfig: MonitoringConfig{
-				Types:   []string{"application/javascript", "text/html"},
-				Methods: []string{"GET"},
-			},
+			monitoringConfig: func() MonitoringConfig {
+				config := *CreateMonitoringConfig()
+				config.Types = []string{"application/javascript", "text/html"}
+
+				return config
+			}(),
 		},
 		{
 			desc:            "Supports multiple methods",
 			inputType:       "text/html",
 			inputMethod:     http.MethodPost,
 			expectedSupport: true,
-			monitoringConfig: MonitoringConfig{
-				Types:   []string{"text/html"},
-				Methods: []string{"GET", "POST"},
-			},
+			monitoringConfig: func() MonitoringConfig {
+				config := *CreateMonitoringConfig()
+				config.Methods = []string{"GET", "POST"}
+
+				return config
+			}(),
 		},
 		{
-			desc:            "Does not support type not included",
-			inputType:       "application/javascript",
-			inputMethod:     http.MethodGet,
-			expectedSupport: false,
-			monitoringConfig: MonitoringConfig{
-				Types:   []string{"text/html"},
-				Methods: []string{"GET"},
-			},
+			desc:             "Does not support type not included",
+			inputType:        "application/javascript",
+			inputMethod:      http.MethodGet,
+			expectedSupport:  false,
+			monitoringConfig: defaultMonitoring,
 		},
 		{
-			desc:            "Does not support method not included",
-			inputType:       "text/html",
-			inputMethod:     http.MethodPost,
-			expectedSupport: false,
-			monitoringConfig: MonitoringConfig{
-				Types:   []string{"text/html"},
-				Methods: []string{"GET"},
-			},
+			desc:             "Does not support method not included",
+			inputType:        "text/html",
+			inputMethod:      http.MethodPost,
+			expectedSupport:  false,
+			monitoringConfig: defaultMonitoring,
 		},
 	}
 

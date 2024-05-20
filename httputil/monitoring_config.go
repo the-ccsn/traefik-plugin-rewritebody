@@ -16,6 +16,21 @@ type MonitoringConfig struct {
 	CheckContentEncoding bool     `default:"true"  export:"true"            json:"checkContentEncoding" toml:"checkContentEncoding" yaml:"checkContentEncoding"`
 }
 
+// CreateMonitoringConfig creates and initializes the monitoring configuration.
+func CreateMonitoringConfig() *MonitoringConfig {
+	config := MonitoringConfig{
+		Types:                nil,
+		Methods:              nil,
+		CheckMimeAccept:      false,
+		CheckMimeContentType: true,
+		CheckAcceptEncoding:  true,
+		CheckContentEncoding: true,
+	}
+	config.EnsureDefaults()
+
+	return &config
+}
+
 // EnsureDefaults check Types and Methods for empty arrays and apply default values if found.
 func (config *MonitoringConfig) EnsureDefaults() {
 	if len(config.Methods) == 0 {

@@ -52,7 +52,10 @@ func New(_ context.Context, next http.Handler, config *Config, name string) (htt
 		monitoringConfig: config.Monitoring,
 	}
 
-	data, _ := json.Marshal(config)
+	data, err := json.Marshal(config)
+	if err != nil {
+		logWriter.LogDebugf("Error generated during marshaling json initializing config: %v", err.Error())
+	}
 
 	logWriter.LogDebugf("Initial config: %v", string(data))
 

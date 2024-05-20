@@ -6,11 +6,17 @@ import (
 	"net/http"
 
 	"github.com/packruler/rewrite-body/handler"
+	"github.com/packruler/rewrite-body/httputil"
 )
 
 // CreateConfig creates and initializes the plugin configuration.
 func CreateConfig() *handler.Config {
-	return &handler.Config{}
+	return &handler.Config{
+		LastModified: false,
+		Rewrites:     nil,
+		LogLevel:     0,
+		Monitoring:   *httputil.CreateMonitoringConfig(),
+	}
 }
 
 // New creates and returns a new rewrite body plugin instance.
