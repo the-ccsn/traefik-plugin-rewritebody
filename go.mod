@@ -1,4 +1,4 @@
-module github.com/packruler/rewrite-body
+module github.com/the-ccsn/rewrite-body
 
 go 1.16
 

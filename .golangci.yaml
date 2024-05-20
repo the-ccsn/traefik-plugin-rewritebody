@@ -37,7 +37,7 @@ linters-settings:
       - stdlib
       # You can specify idiomatic endings for interface
       - (or|er)$
-      - github.com/packruler/rewrite-body/logger.LogWriter
+      - github.com/the-ccsn/rewrite-body/logger.LogWriter
 linters:
   enable-all: true
   disable:

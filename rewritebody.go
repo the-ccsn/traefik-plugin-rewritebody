@@ -5,8 +5,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/packruler/rewrite-body/handler"
-	"github.com/packruler/rewrite-body/httputil"
+	"github.com/the-ccsn/rewrite-body/handler"
+	"github.com/the-ccsn/rewrite-body/httputil"
 )
 
 // CreateConfig creates and initializes the plugin configuration.

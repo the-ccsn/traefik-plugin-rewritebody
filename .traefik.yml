@@ -4,7 +4,7 @@ summary: Built on top of Traefik Rewrite Body plugin to also support gzip decomp
 
 type: middleware
 
-import: github.com/packruler/rewrite-body
+import: github.com/the-ccsn/rewrite-body
 
 testData:
   lastModified: true
