@@ -1,44 +1,33 @@
-# Rewrite Body
+# Response Body Rewrite Plugin
 
-This is a fork of [Traefik](https://github.com/traefik)'s [plugin-rewritebody](https://github.com/traefik/plugin-rewritebody)
-that is aimed at extending support to handle `gzip` content. This was initially aimed at extending the support for utilizing
-[theme.park](https://github.com/traefik/plugin-rewritebody)'s themes but can likely be used for a range of other uses.
-
-## Changes From Original Traefik Plugin
-
-The primary change is to add support for `gzip` content. This brought another potential issue to mind, what about really large
-content? This was handled as well.
+This is a fork of [packruler](https://github.com/packruler)'s [rewrite-body](https://github.com/packruler/rewrite-body)
+which is a fork of [Traefik](https://github.com/traefik)'s [plugin-rewritebody](https://github.com/traefik/plugin-rewritebody)
 
 ### Process For Handling Body Content
 
 #### Body Content Requirements
 
-* The header must have `Content-Type` that includes `text`. For example:
-  * `text/html`
-  * `text/json`
+* The target content must be able to be parsed as texts.
 * The header must have `Content-Encoding` header that is supported by this plugin
   * The original plugin supported `Content-Encoding` of `identity` or empty
-  * This plugin adds support for `gzip` and `zlib` encoding
+  * This plugin adds support for `gzip`, `deflate`, `brotli` encoding
 
 #### Processing Paths
 
-* If the either of the previous conditions failes the body is passed on as is and no further processing from this plugin occurs.
-
 * If the `Content-Encoding` is empty or `identity` it is handled in mostly the same manner as the original plugin.
 
-* If the `Content-Encoding` is `gzip` the following process happens:
-  * The body content is decompressed by [Go-lang's gzip library](https://pkg.go.dev/compress/gzip)
+* If the `Content-Encoding` is `gzip`, `deflate` or `br` then it falls in following path:
+  * The body content is decompressed
   * The resulting content is run through the `regex` process created by the original plugin
   * The processed content is then compressed with the same library and returned
+
+**Note:** If either of conditions configured fails, then the body will be passed as is with no further processing.
 
 ## Configuration
 
 ### Static
 
 ```yaml
-pilot:
-  token: "xxxx"
-
 experimental:
     plugins:
         rewrite-body:
@@ -50,7 +39,7 @@ experimental:
 
 To configure the `Rewrite Body` plugin you should create a [middleware](https://docs.traefik.io/middlewares/overview/) in 
 your dynamic configuration as explained [here](https://docs.traefik.io/middlewares/overview/). The following example creates
-and uses the `rewritebody` middleware plugin to replace all foo occurences by bar in the HTTP response body.
+and uses the `rewrite-body` middleware plugin to replace all foo occurrences by bar in the HTTP response body.
 
 If you want to apply some limits on the response body, you can chain this middleware plugin with the [Buffering middleware](https://docs.traefik.io/middlewares/buffering/) from Traefik.
 
@@ -58,7 +47,7 @@ If you want to apply some limits on the response body, you can chain this middle
 http:
   routers:
     my-router:
-      rule: "Host(`localhost`)"
+      rule: "Host(`example.com`)"
       middlewares: 
         - "rewrite-foo"
       service: "my-service"
@@ -92,39 +81,17 @@ http:
             # Wildcards(*) are not supported!
             types:
               - text/html
+            # checkMimeAccept is a boolean. If true, the Accept header will be checked for the MIME type
+            checkMimeAccept: true
+            # checkMimeContentType is a boolean. If true, the Content-Type header will be checked for the MIME type
+            checkMimeContentType: true
+            # checkAcceptEncoding is a boolean. If true, the Accept-Encoding header will be checked for the encoding
+            checkAcceptEncoding: true
+            # checkContentEncoding is a boolean. If true, the Content-Encoding header will be checked for the encoding
+            checkContentEncoding: true
   services:
     my-service:
       loadBalancer:
         servers:
           - url: "http://127.0.0.1"
 ```
-
-## Example theme.park
-
-### Dynamic
-
-```yaml
-http:
-  routers:
-    sonarr-router:
-      rule: "Host(`sonarr.example.com`)"
-      middlewares: 
-        - sonarr-theme
-      service: sonarr-service
-
-  middlewares:
-    sonarr-theme:
-      plugin:
-        rewrite-body:
-          rewrites:
-            - regex: </head>
-              replacement: <link rel="stylesheet" type="text/css" href="https://theme-park.dev/css/base/sonarr/{{ env "THEME" }}.css"></head>
-
-  services:
-    sonarr-service:
-      servers:
-        - url: http://localhost:8989
-```
-
-You can set an environment variable `THEME` to the name of a theme for easier consistency across apps.
-

@@ -1,6 +1,6 @@
-displayName: Rewrite Body (with compression support)
+displayName: Response Body Rewrite
 
-summary: Built on top of Traefik Rewrite Body plugin to also support gzip decompress -> update -> recompress.
+summary: Middleware with ability to replace response body with with regex
 
 type: middleware
 
@@ -14,4 +14,9 @@ testData:
   monitoring:
     types:
       - text/html
-    methods: ["GET"]
+    methods:
+      - GET
+    checkMimeAccept: true
+    checkMimeContentType: true
+    checkAcceptEncoding: true
+    checkContentEncoding: true
