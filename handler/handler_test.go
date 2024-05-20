@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/the-ccsn/rewrite-body/compressutil"
-	"github.com/the-ccsn/rewrite-body/httputil"
+	"github.com/the-ccsn/traefik-plugin-rewritebody/compressutil"
+	"github.com/the-ccsn/traefik-plugin-rewritebody/httputil"
 )
 
 func TestServeHTTP(t *testing.T) {

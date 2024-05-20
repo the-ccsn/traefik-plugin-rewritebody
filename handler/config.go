@@ -3,7 +3,7 @@ package handler
 import (
 	"regexp"
 
-	"github.com/the-ccsn/rewrite-body/httputil"
+	"github.com/the-ccsn/traefik-plugin-rewritebody/httputil"
 )
 
 // Rewrite holds one rewrite body configuration.

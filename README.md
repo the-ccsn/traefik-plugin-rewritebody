@@ -42,7 +42,7 @@ pilot:
 experimental:
     plugins:
         rewrite-body:
-            moduleName: "github.com/the-ccsn/rewrite-body"
+            moduleName: "github.com/the-ccsn/traefik-plugin-rewritebody"
             version: "v1.1.0"
 ```
 

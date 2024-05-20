@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/the-ccsn/rewrite-body/compressutil"
-	"github.com/the-ccsn/rewrite-body/logger"
+	"github.com/the-ccsn/traefik-plugin-rewritebody/compressutil"
+	"github.com/the-ccsn/traefik-plugin-rewritebody/logger"
 )
 
 // RequestWrapper a struct that centralizes request modifications.

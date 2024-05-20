@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/the-ccsn/rewrite-body/compressutil"
+	"github.com/the-ccsn/traefik-plugin-rewritebody/compressutil"
 )
 
 type TestStruct struct {

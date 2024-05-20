@@ -5,8 +5,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/the-ccsn/rewrite-body/handler"
-	"github.com/the-ccsn/rewrite-body/httputil"
+	"github.com/the-ccsn/traefik-plugin-rewritebody/handler"
+	"github.com/the-ccsn/traefik-plugin-rewritebody/httputil"
 )
 
 // CreateConfig creates and initializes the plugin configuration.

@@ -4,14 +4,14 @@ summary: Built on top of Traefik Rewrite Body plugin to also support gzip decomp
 
 type: middleware
 
-import: github.com/the-ccsn/rewrite-body
+import: github.com/the-ccsn/traefik-plugin-rewritebody
 
 testData:
   lastModified: true
   rewrites:
     - regex: "bar"
       replacement: "foo"
-  monitor:
+  monitoring:
     types:
       - text/html
     methods: ["GET"]

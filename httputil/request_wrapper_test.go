@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/the-ccsn/rewrite-body/logger"
+	"github.com/the-ccsn/traefik-plugin-rewritebody/logger"
 )
 
 func TestGetEncodingTarget(t *testing.T) {
