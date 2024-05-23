@@ -1,0 +1,26 @@
+version: '3.9'
+
+services:
+  traefik:
+    image: traefik:v3.0
+    command:
+      - --api.insecure=true
+      - --providers.docker
+      - --providers.file.filename=/rules-rewrite-body.yaml
+      - --log.level=DEBUG
+      - --experimental.localPlugins.rewrite-body.moduleName=github.com/the-ccsn/traefik-plugin-rewritebody
+    ports:
+      - 80:80
+      - 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./rules-rewrite-body.yaml:/rules-rewrite-body.yaml
+      - .:/plugins-local/src/github.com/the-ccsn/traefik-plugin-rewritebody/
+    tty: true
+
+  whoami:
+    image: traefik/whoami # https://github.com/traefik/whoami
+    command: -name whoami
+    labels:
+      traefik.http.routers.whoami.rule: Host(`whoami.localhost`)
+      traefik.http.routers.whoami.middlewares: rewrite-body@file

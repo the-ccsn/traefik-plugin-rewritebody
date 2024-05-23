@@ -1,0 +1,20 @@
+# Template for configuration
+
+http:
+  middlewares:
+    rewrite-body:
+      plugin:
+        rewrite-body:
+          lastModified: true
+          rewrites:
+            - regex: "bar"
+              replacement: "foo"
+          monitoring:
+            types:
+              - text/html
+            methods:
+              - GET
+            checkMimeAccept: true
+            checkMimeContentType: true
+            checkAcceptEncoding: true
+            checkContentEncoding: true
