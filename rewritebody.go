@@ -1,5 +1,5 @@
 // Package rewrite_body a plugin to rewrite response body.
-package rewrite_body
+package traefik_plugin_rewritebody
 
 import (
 	"context"

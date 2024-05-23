@@ -1,4 +1,4 @@
-package rewrite_body
+package traefik_plugin_rewritebody
 
 import (
 	"bytes"

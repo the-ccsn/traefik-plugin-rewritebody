@@ -1,10 +1,14 @@
 config:
   lastModified: true
-  logLevel: 0
-  monitor:
+  rewrites:
+    - regex: "bar"
+      replacement: "foo"
+  monitoring:
     types:
       - text/html
-    methods: ["GET"]
-  rewrites:
-    - regex: "test"
-      replacement: "test"
+    methods:
+      - GET
+    checkMimeAccept: true
+    checkMimeContentType: true
+    checkAcceptEncoding: true
+    checkContentEncoding: true
