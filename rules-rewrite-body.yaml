@@ -2,6 +2,13 @@
 
 http:
   middlewares:
+    compress:
+      compress:
+        includedContentTypes:
+          - application/json
+          - text/html
+          - text/plain
+        minResponseBodyBytes: 1
     rewrite-body:
       plugin:
         rewrite-body:
@@ -11,10 +18,10 @@ http:
               replacement: "foo"
           monitoring:
             types:
-              - text/html
+              - text/plain
             methods:
               - GET
-            checkMimeAccept: true
+            checkMimeAccept: false
             checkMimeContentType: true
             checkAcceptEncoding: true
             checkContentEncoding: true
